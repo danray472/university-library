@@ -1,27 +1,28 @@
 import Link from "next/link";
 import Image from "next/image";
-import { signOut } from "@/auth";
-import { Button } from "@/components/ui/button";
+import { auth } from "@/auth";
+import { getInitials } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-const Header = () => {
+const Header = async () => {
+  const session = await auth();
+  const name = session?.user?.name || "User";
+  const initials = getInitials(name);
+
   return (
-    <header className="my-10 flex justify-between gap-5">
-      <Link href="/">
-        <Image src="/icons/logo.svg" alt="logo" width={40} height={40} />
+    <header className="my-10 flex justify-between gap-x-1 px-4 sm:px-6 md:px-8">
+      <Link href="/" className="flex items-center gap-1 flex-grow min-w-0">
+        <Image src="/icons/logo.svg" alt="logo" width={28} height={28} className="shrink-0" />
+        <h1 className="font-bebas-neue text-sm sm:text-base md:text-xl lg:text-4xl text-light-100 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap hidden sm:block">Bazu Library</h1>
       </Link>
 
-      <ul className="flex flex-row items-center gap-8">
+      <ul className="flex flex-row items-center gap-x-1 shrink-0">
         <li>
-          <form
-            action={async () => {
-              "use server";
-
-              await signOut();
-            }}
-            className="mb-10"
-          >
-            <Button>Logout</Button>
-          </form>
+          <Link href="/my-profile">
+            <Avatar className="w-8 h-8 cursor-pointer shrink-0">
+              <AvatarFallback className="bg-amber-100 text-sm">{initials}</AvatarFallback>
+            </Avatar>
+          </Link>
         </li>
       </ul>
     </header>

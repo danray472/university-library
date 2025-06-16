@@ -49,3 +49,35 @@ export const borrowBook = async (params: BorrowBookParams) => {
     };
   }
 };
+
+export const markAsReturned = async (borrowRecordId: string) => {
+  try {
+    // Get the borrow record to find the bookId
+    const record = await db
+      .select({ bookId: borrowRecords.bookId })
+      .from(borrowRecords)
+      .where(eq(borrowRecords.id, borrowRecordId))
+      .limit(1);
+
+    if (!record.length) {
+      return { success: false, error: "Borrow record not found" };
+    }
+
+    // Update the borrow record
+    await db
+      .update(borrowRecords)
+      .set({ status: "RETURNED", returnDate: new Date() })
+      .where(eq(borrowRecords.id, borrowRecordId));
+
+    // Increment the book's availableCopies
+    await db
+      .update(books)
+      .set({ availableCopies: books.availableCopies + 1 })
+      .where(eq(books.id, record[0].bookId));
+
+    return { success: true };
+  } catch (error) {
+    console.log(error);
+    return { success: false, error: "An error occurred while marking as returned" };
+  }
+};

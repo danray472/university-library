@@ -24,9 +24,12 @@ const bebasNeue = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "BookWise",
+  title: "Bazu Library",
   description:
-    "BookWise is a book borrowing university library management solution.",
+    "Bazu Library is a book borrowing university library management solution.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
