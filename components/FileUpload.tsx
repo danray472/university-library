@@ -16,22 +16,19 @@ const {
 
 const authenticator = async () => {
   try {
-    const response = await fetch(`${config.env.apiEndpoint}/api/imagekit`);
+    const response = await fetch(`${config.env.prodApiEndpoint}/api/imagekit`);
 
     if (!response.ok) {
       const errorText = await response.text();
-
       throw new Error(
         `Request failed with status ${response.status}: ${errorText}`,
       );
     }
 
     const data = await response.json();
-
-    const { signature, expire, token } = data;
-
-    return { token, expire, signature };
+    return data.token;
   } catch (error: any) {
+    console.error('ImageKit authentication error:', error);
     throw new Error(`Authentication request failed: ${error.message}`);
   }
 };

@@ -15,7 +15,7 @@ const BookList = ({ title, books, containerClassName, onLoadMore, hasMore, loadi
   if (!books || books.length < 1) return null;
 
   return (
-    <section className={containerClassName}>
+    <section className={`${containerClassName} px-4 sm:px-6 md:px-8`}>
       <h2 className="font-bebas-neue text-4xl text-light-100">{title}</h2>
 
       <ul className="book-list">
