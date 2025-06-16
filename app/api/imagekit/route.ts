@@ -8,14 +8,25 @@ const {
   },
 } = config;
 
+// Log configuration (without sensitive data)
+console.log('ImageKit Config:', {
+  hasPublicKey: !!publicKey,
+  hasPrivateKey: !!privateKey,
+  urlEndpoint,
+});
+
 const imagekit = new ImageKit({ publicKey, privateKey, urlEndpoint });
 
 export async function GET() {
   try {
-    const token = imagekit.getAuthenticationToken();
+    if (!publicKey || !privateKey || !urlEndpoint) {
+      throw new Error('Missing required ImageKit configuration');
+    }
+
+    const authParams = imagekit.getAuthenticationParameters();
     
     return NextResponse.json(
-      { token },
+      authParams,
       {
         status: 200,
         headers: {
@@ -26,7 +37,12 @@ export async function GET() {
       }
     );
   } catch (error) {
-    console.error('ImageKit authentication error:', error);
+    console.error('Detailed ImageKit authentication error:', {
+      error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    
     return NextResponse.json(
       { error: 'Failed to authenticate with ImageKit' },
       {

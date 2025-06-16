@@ -16,19 +16,36 @@ const {
 
 const authenticator = async () => {
   try {
+    console.log('Fetching ImageKit token from:', `${config.env.prodApiEndpoint}/api/imagekit`);
+    
     const response = await fetch(`${config.env.prodApiEndpoint}/api/imagekit`);
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('ImageKit API error response:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorText,
+      });
       throw new Error(
         `Request failed with status ${response.status}: ${errorText}`,
       );
     }
 
     const data = await response.json();
-    return data.token;
+    console.log('ImageKit auth response:', { hasData: !!data });
+    
+    if (!data || !data.token) {
+      throw new Error('No authentication data received from ImageKit API');
+    }
+    
+    return data;
   } catch (error: any) {
-    console.error('ImageKit authentication error:', error);
+    console.error('ImageKit authentication error:', {
+      error,
+      message: error.message,
+      stack: error.stack,
+    });
     throw new Error(`Authentication request failed: ${error.message}`);
   }
 };
